@@ -76,6 +76,7 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -85,9 +86,15 @@ public class ChooseAreaFragment extends Fragment {
                 }else if (LEVEL_CITY == currentLevel){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if (LEVEL_COUNTY == currentLevel){
+                    County county = countyList.get(position);
+                    Snackbar.make(listView
+                            , county.getCountyName()+" 的气象编码是："+county.getWeatherId()
+                            ,Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,7 +158,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCounties(){
         titleText.setText(selectedCity.getCityName());
         if (backButton.getVisibility() == View.GONE){
-            backButton.setVisibility(View.INVISIBLE);
+            backButton.setVisibility(View.VISIBLE);
         }
         countyList = DataSupport
                 .where("cityid = ?", String.valueOf(selectedCity.getId()))
@@ -167,7 +174,7 @@ public class ChooseAreaFragment extends Fragment {
         }else {
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
-            String address = "http://www.guolin.com/api/china/"+provinceCode+"/"+cityCode;
+            String address = "http://www.guolin.tech/api/china/"+provinceCode+"/"+cityCode;
             queryFromServer(address, "county");
         }
 
@@ -200,14 +207,19 @@ public class ChooseAreaFragment extends Fragment {
                     result = Utility.handleCountiesResponce(responseText, selectedCity.getId());
                 }
                 if (result){
-                    closeProgressDialog();
-                    if ("province".equals(type)){
-                        queryProvinces();
-                    }else if ("city".equals(type)){
-                        queryCities();
-                    }else if ("county".equals(type)){
-                        queryCounties();
-                    }
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            closeProgressDialog();
+                            if ("province".equals(type)){
+                                queryProvinces();
+                            }else if ("city".equals(type)){
+                                queryCities();
+                            }else if ("county".equals(type)){
+                                queryCounties();
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -223,7 +235,7 @@ public class ChooseAreaFragment extends Fragment {
     }
 
     private void closeProgressDialog(){
-        if (progressDialog == null){
+        if (progressDialog != null){
             progressDialog.dismiss();
         }
     }
