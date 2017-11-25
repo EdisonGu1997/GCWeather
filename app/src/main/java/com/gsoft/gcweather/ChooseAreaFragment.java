@@ -1,6 +1,7 @@
 package com.gsoft.gcweather;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -85,10 +86,16 @@ public class ChooseAreaFragment extends Fragment {
                     selectedCity = cityList.get(position);
                     queryCounties();
                 }else if (LEVEL_COUNTY == currentLevel){
-                    County county = countyList.get(position);
-                    Snackbar.make(listView
-                            , county.getCountyName()+" 的气象编码是："+county.getWeatherId()
-                            ,Snackbar.LENGTH_SHORT).show();
+//                    County county = countyList.get(position);
+//                    Snackbar.make(listView
+//                            , county.getCountyName()+" 的气象编码是："+county.getWeatherId()
+//                            ,Snackbar.LENGTH_SHORT).show();
+                    String weatherId = countyList.get(position).getWeatherId();
+                    Intent intent = new Intent(getContext(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
+
                 }
             }
         });

@@ -11,7 +11,7 @@
         android:id="@+id/title_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="济宁"
+        android:text="N/A"
         android:textSize="36sp"
         android:textColor="#FFFFFFFF"/>
 
@@ -19,7 +19,7 @@
         android:id="@+id/title_update_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2017/11/24 19:26"
+        android:text="XXXX/XX/XX XX:XX"
         android:textColor="#8fff"/>
 
 </LinearLayout>
