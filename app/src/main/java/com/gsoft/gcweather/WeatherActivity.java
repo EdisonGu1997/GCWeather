@@ -1,5 +1,6 @@
 package com.gsoft.gcweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -27,6 +29,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+
+    private ImageView switchButton;
 
     private ScrollView weatherLayout;
 
@@ -55,20 +59,7 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         initView();
-    }
-
-    private void initView(){
-        weatherLayout = (ScrollView) findViewById(R.id.weather_layout);
-        titleCity = (TextView) findViewById(R.id.title_city);
-        titleUpdateTime = (TextView) findViewById(R.id.title_update_time);
-        degreeText = (TextView) findViewById(R.id.degree_text);
-        weatherInfoText = (TextView) findViewById(R.id.weather_info_text);
-        forecastLayout = (LinearLayout) findViewById(R.id.forecast_layout);
-        aqiText = (TextView) findViewById(R.id.aqi_text);
-        pm25Text = (TextView) findViewById(R.id.pm25_text);
-        comfortText = (TextView) findViewById(R.id.comfort_text);
-        carWashText = (TextView) findViewById(R.id.car_wash_text);
-        sportText = (TextView) findViewById(R.id.sport_text);
+        setupView();
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = pref.getString("weather", null);
@@ -82,22 +73,50 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    private void initView(){
+        switchButton = (ImageView) findViewById(R.id.switch_city);
+        weatherLayout = (ScrollView) findViewById(R.id.weather_layout);
+        titleCity = (TextView) findViewById(R.id.title_city);
+        titleUpdateTime = (TextView) findViewById(R.id.title_update_time);
+        degreeText = (TextView) findViewById(R.id.degree_text);
+        weatherInfoText = (TextView) findViewById(R.id.weather_info_text);
+        forecastLayout = (LinearLayout) findViewById(R.id.forecast_layout);
+        aqiText = (TextView) findViewById(R.id.aqi_text);
+        pm25Text = (TextView) findViewById(R.id.pm25_text);
+        comfortText = (TextView) findViewById(R.id.comfort_text);
+        carWashText = (TextView) findViewById(R.id.car_wash_text);
+        sportText = (TextView) findViewById(R.id.sport_text);
+    }
+
+    private void setupView(){
+        switchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(WeatherActivity.this, MainActivity.class));
+                finish();
+            }
+        });
+    }
+
     public void requestWeather(final String weatherId){
-        String weatherUrl = "http://127.0.0.1:5000/api/weather/" +
+        String weatherUrl = "http://10.0.2.2:5000/api/weather/" +
                 "?city_name=%22%E6%B5%8E%E5%AE%81%22&?" +
                 "weather_id=%22123456%22";
+
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-                Snackbar.make(titleCity, "加载天气信息失败！",
+                Snackbar.make(titleCity, "加载天气信息失败！fail",
                         Snackbar.LENGTH_SHORT).show();
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String responseText = response.body().toString();
+                final String responseText = response.body().string();
+                System.out.println("resp is "+responseText);
                 final Weather weather = Utility.handleWeatherResponse(responseText);
+                System.out.println(weather);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -109,7 +128,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.apply();
                             showWeatherInfo(weather);
                         }else {
-                            Snackbar.make(titleCity, "加载天气信息失败！",
+                            Snackbar.make(titleCity, "加载天气信息失败！resp",
                                     Snackbar.LENGTH_SHORT).show();
                         }
                     }

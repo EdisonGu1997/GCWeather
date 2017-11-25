@@ -1,6 +1,7 @@
 package com.gsoft.gcweather.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -105,6 +106,7 @@ public class Utility {
             JSONObject jsonObject = new JSONObject(response);
             JSONArray jsonArray = jsonObject.getJSONArray("GCWeather");
             String weatherContent = jsonArray.getJSONObject(0).toString();
+            Log.d("Utility", "handleWeatherResponse: "+weatherContent);
             return new Gson().fromJson(weatherContent, Weather.class);
         }catch (Exception e){
             e.printStackTrace();
