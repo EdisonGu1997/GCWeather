@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="#8000">
+
+    <TextView
+        android:id="@+id/title_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="济宁"
+        android:textSize="36sp"
+        android:textColor="#FFFFFFFF"/>
+
+    <TextView
+        android:id="@+id/title_update_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2017/11/24 19:26"
+        android:textColor="#8fff"/>
+
+</LinearLayout>

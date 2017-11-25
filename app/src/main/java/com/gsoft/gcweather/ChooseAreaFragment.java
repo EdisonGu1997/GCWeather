@@ -2,8 +2,6 @@ package com.gsoft.gcweather;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.renderscript.Sampler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -200,11 +198,11 @@ public class ChooseAreaFragment extends Fragment {
                 String responseText = response.body().string();
                 boolean result = false;
                 if ("province".equals(type)){
-                    result = Utility.handleProvinceResponce(responseText);
+                    result = Utility.handleProvinceResponse(responseText);
                 }else if ("city".equals(type)){
-                    result = Utility.handleCityResponce(responseText, selectedProvince.getId());
+                    result = Utility.handleCityResponse(responseText, selectedProvince.getId());
                 }else if ("county".equals(type)){
-                    result = Utility.handleCountiesResponce(responseText, selectedCity.getId());
+                    result = Utility.handleCountiesResponse(responseText, selectedCity.getId());
                 }
                 if (result){
                     getActivity().runOnUiThread(new Runnable() {
