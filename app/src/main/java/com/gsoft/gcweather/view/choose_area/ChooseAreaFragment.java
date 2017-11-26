@@ -1,11 +1,14 @@
-package com.gsoft.gcweather;
+package com.gsoft.gcweather.view.choose_area;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.gsoft.gcweather.MainActivity;
+import com.gsoft.gcweather.R;
+import com.gsoft.gcweather.util.LogUtil;
+import com.gsoft.gcweather.view.weather.WeatherActivity;
 import com.gsoft.gcweather.db.City;
 import com.gsoft.gcweather.db.County;
 import com.gsoft.gcweather.db.Province;
@@ -36,6 +43,8 @@ import okhttp3.Response;
  */
 
 public class ChooseAreaFragment extends Fragment {
+
+    private static final String TAG = new ChooseAreaFragment().getClass().getName();
 
     private static final int LEVEL_PROVINCE = 0;
     private static final int LEVEL_CITY = 1;
@@ -65,7 +74,30 @@ public class ChooseAreaFragment extends Fragment {
         backButton = (Button) view.findViewById(R.id.back_button);
         titleText = (TextView) view.findViewById(R.id.title_text);
         listView = (ListView) view.findViewById(R.id.list_view);
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dataList);
+        adapter = new ArrayAdapter<String>(getContext(), R.layout.area_item, dataList){
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view;
+                ViewHolder viewHolder = new ViewHolder();
+                if (convertView == null){
+                    view = LayoutInflater.from(getContext())
+                            .inflate(R.layout.area_item, parent, false);
+                    viewHolder.areaNameText = (TextView) view.findViewById(R.id.area_name_text);
+                    view.setTag(viewHolder);
+                }else {
+                    view = convertView;
+                    viewHolder = (ViewHolder) convertView.getTag();
+                }
+
+                viewHolder.areaNameText.setText(dataList.get(position));
+                return view;
+            }
+
+            class ViewHolder{
+                TextView areaNameText;
+            }
+        };
 
         listView.setAdapter(adapter);
 
@@ -90,11 +122,19 @@ public class ChooseAreaFragment extends Fragment {
 //                    Snackbar.make(listView
 //                            , county.getCountyName()+" 的气象编码是："+county.getWeatherId()
 //                            ,Snackbar.LENGTH_SHORT).show();
-                    String weatherId = countyList.get(position).getWeatherId();
-                    Intent intent = new Intent(getContext(), WeatherActivity.class);
-                    intent.putExtra("weather_id", weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    LogUtil.d(TAG, getActivity() != null ? getActivity().getClass().getName() : "null");
+                    if (getActivity() instanceof MainActivity) {
+                        String weatherId = countyList.get(position).getWeatherId();
+                        Intent intent = new Intent(getContext(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if (getActivity() instanceof WeatherActivity){
+                        WeatherActivity weatherA = (WeatherActivity) getActivity();
+                        weatherA.drawerLayout.closeDrawers();
+                        weatherA.requestWeather(countyList.get(position).getWeatherId());
+
+                    }
 
                 }
             }
